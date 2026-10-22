@@ -15,6 +15,14 @@ if ROOT_DIR not in sys.path:
 if BACKEND_DIR not in sys.path:
     sys.path.insert(0, BACKEND_DIR)
 
+# Auto-load environment variables (.env)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(BACKEND_DIR, ".env"), override=False)
+    load_dotenv(os.path.join(ROOT_DIR, ".env"), override=False)
+except ImportError:
+    pass
+
 import uvicorn
 
 if __name__ == "__main__":

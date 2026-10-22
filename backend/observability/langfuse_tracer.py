@@ -360,14 +360,16 @@ class LangfuseTracer:
     _is_connected = False
 
     @staticmethod
-    def _is_server_reachable(url_str: str, timeout_sec: float = 0.25) -> bool:
-        """Fast non-blocking socket probe to prevent hanging when telemetry server is offline."""
+    def _is_server_reachable(url_str: str, timeout_sec: float = 1.5) -> bool:
+        """Fast socket probe to verify reachability without hanging when telemetry server is offline."""
         try:
             parsed = urlparse(url_str)
             host = parsed.hostname or "localhost"
             port = parsed.port or (443 if parsed.scheme == "https" else 80)
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(timeout_sec)
+            # Give cloud endpoints slightly more headroom for international SSL handshake
+            actual_timeout = 2.5 if ("cloud.langfuse.com" in host or parsed.scheme == "https") else timeout_sec
+            sock.settimeout(actual_timeout)
             res = sock.connect_ex((host, port))
             sock.close()
             return res == 0

@@ -21,6 +21,14 @@ PROJECT_ROOT = os.path.dirname(BACKEND_DIR)
 sys.path.insert(0, BACKEND_DIR)
 sys.path.insert(0, PROJECT_ROOT)
 
+# Auto-load environment variables (.env)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(BACKEND_DIR, ".env"), override=False)
+    load_dotenv(os.path.join(PROJECT_ROOT, ".env"), override=False)
+except ImportError:
+    pass
+
 from agent.controller import AgentController
 from agent.registry import list_tools
 from models.loader import ModelRegistryStatus
